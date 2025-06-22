@@ -1,0 +1,138 @@
+body {
+    background: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
+
+.contenedor {
+    width: 420px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #bbb;
+    overflow: hidden;
+}
+
+.cabecera {
+    background: #009fe3;
+    color: #fff;
+    text-align: center;
+    padding: 18px 0;
+    font-size: 1.3em;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.busqueda {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 18px 0 10px 0;
+    gap: 10px;
+    background: #eaf6fb;
+}
+
+.busqueda input[type="text"] {
+    width: 220px;
+    padding: 8px 12px;
+    border-radius: 18px;
+    border: 1px solid #b3e0f7;
+    background: #c7eafd;
+    font-size: 1em;
+    outline: none;
+}
+
+.busqueda button {
+    padding: 8px 18px;
+    border-radius: 12px;
+    border: 1px solid #009fe3;
+    background: #fff;
+    color: #009fe3;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.busqueda button:hover {
+    background: #009fe3;
+    color: #fff;
+}
+
+.resultados {
+    padding: 18px 30px 24px 30px;
+}
+
+.campo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.campo label {
+    width: 110px;
+    font-weight: bold;
+    color: #333;
+}
+
+.campo input[type="text"] {
+    flex: 1;
+    padding: 7px 12px;
+    border-radius: 14px;
+    border: 1px solid #e6dca7;
+    background: #f9f5d7;
+    font-size: 1em;
+    margin-left: 10px;
+}
+
+.mensaje {
+    color: #d32f2f;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+
+/* Aquí tienes estilos CSS para mejorar la visualización del formulario de registro de incidente y para mostrar incidencias encontradas de forma clara y profesional. */
+#formIncidente {
+    background: #e3f2fd !important; /* Azul claro más notorio */
+    border: 1.5px solid #1976d2;
+    border-radius: 10px;
+    padding: 18px 20px 10px 20px;
+    margin-top: 18px;
+    box-shadow: 0 2px 8px #e0e0e0;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+#formIncidente h4 {
+    color: #1976d2;
+}
+
+#incidentes h4 {
+    color: #d32f2f !important;
+    margin-bottom: 8px;
+}
+
+#incidentes ul {
+    list-style: none;
+    padding: 0;
+}
+
+#incidentes li {
+    background: #fff8e1 !important; /* Amarillo suave más notorio */
+    border: 1.5px solid #ffb300;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 4px #ffe082;
+    font-size: 0.98em;
+}
+
+#incidentes b {
+    color: #333;
+}
+
+#incidentes hr {
+    border: none;
+    border-top: 1px dashed #ffb300;
+    margin: 10px 0 0 0;
+}

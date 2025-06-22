@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta DNI RENIEC</title>
+    <link rel="stylesheet" href="estilos.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="cabecera">
+            Consulta DNI RENIEC
+        </div>
+        <div class="busqueda">
+            <input type="text" id="dni" maxlength="8" placeholder="Ingrese DNI">
+            <button id="buscar">BUSCAR</button>
+        </div>
+        <div class="resultados">
+            <div class="campo">
+                <label>DNI:</label>
+                <input type="text" id="dni_result" readonly>
+            </div>
+            <div class="campo">
+                <label>NOMBRES:</label>
+                <input type="text" id="nombres_result" readonly>
+            </div>
+            <div class="campo">
+                <label>AP.PATERNO:</label>
+                <input type="text" id="ap_paterno_result" readonly>
+            </div>
+            <div class="campo">
+                <label>AP.MATERNO:</label>
+                <input type="text" id="ap_materno_result" readonly>
+            </div>
+            <div id="mensaje" class="mensaje"></div>
+
+            <div id="incidentes"></div>
+            <div id="formIncidente" style="display:none; margin-top:20px;">
+                <h4>Registrar Incidente</h4>
+                <label>Habitación: <input type="text" id="habitacion"></label><br><br>
+                <label>DNI Acompañante (opcional): <input type="text" id="dni_acompanante"></label>
+                <span id="nombre_acompanante"></span><br><br>
+                <label>Concepto:<br>
+                <textarea id="concepto" rows="3" cols="35"></textarea>
+                </label><br><br>
+                <button id="guardarIncidente">Guardar Incidente</button>
+                <button type="button" onclick="$('#formIncidente').hide()">Cancelar</button>
+            </div>
+            <button id="btnRegistrar" style="display:none; margin-top:10px;">Registrar</button>
+        </div>
+    </div>
+    <script>
+    // Buscar y mostrar datos de DNI
+    $('#buscar').click(function() {
+        var dni = $('#dni').val();
+        $('#mensaje').html('Consultando...');
+        $.ajax({
+            url: 'api/dni-api.php',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ dato: dni }),
+            success: function(r) {
+                if (r.error) {
+                    $('#mensaje').html(r.message);
+                    $('#dni_result, #nombres_result, #ap_paterno_result, #ap_materno_result').val('');
+                    $('#incidentes').html('');
+                    $('#btnRegistrar').hide();
+                } else {
+                    $('#mensaje').html('');
+                    $('#dni_result').val(r.numeroDocumento || '');
+                    $('#nombres_result').val(r.nombres || '');
+                    $('#ap_paterno_result').val(r.apellidoPaterno || '');
+                    $('#ap_materno_result').val(r.apellidoMaterno || '');
+                    cargarIncidentes(r.numeroDocumento);
+                }
+            },
+            error: function() {
+                $('#mensaje').html('Error en la consulta.');
+            }
+        });
+    });
+
+    // Mostrar incidentes al consultar DNI
+    function cargarIncidentes(dni) {
+        $.get('api/incidentes.php?dni=' + dni, function(res) {
+            let html = '';
+            if (res.incidentes && res.incidentes.length > 0) {
+                html = '<h4>Incidentes registrados:</h4><ul>';
+                res.incidentes.forEach(function(i) {
+                    html += `<li>
+                        <b>Fecha:</b> ${i.fecha} | <b>Habitación:</b> ${i.habitacion}<br>
+                        <b>Acompañante:</b> ${i.acompanante ? i.acompanante + ' - ' + (i.nombre_acompanante || '') : 'Ninguno'}<br>
+                        <b>Concepto:</b> ${i.concepto}
+                    </li><hr>`;
+                });
+                html += '</ul>';
+            } else {
+                html = '<div class="mensaje" style="color:green;">¡No tiene incidentes registrados!</div>';
+            }
+            $('#incidentes').html(html);
+            $('#btnRegistrar').show();
+        });
+    }
+
+    // Mostrar formulario de registro
+    $('#btnRegistrar').click(function() {
+        $('#formIncidente').show();
+        $('#habitacion, #dni_acompanante, #concepto').val('');
+        $('#nombre_acompanante').text('');
+    });
+
+    // Buscar nombre de acompañante al ingresar DNI
+    $('#dni_acompanante').on('blur', function() {
+        var dni = $(this).val();
+        if (dni.length === 8) {
+            $.ajax({
+                url: 'api/dni-api.php',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ dato: dni }),
+                success: function(r) {
+                    if (!r.error) {
+                        $('#nombre_acompanante').text(r.nombres + ' ' + r.apellidoPaterno + ' ' + r.apellidoMaterno);
+                    } else {
+                        $('#nombre_acompanante').text('No encontrado');
+                    }
+                }
+            });
+        } else {
+            $('#nombre_acompanante').text('');
+        }
+    });
+
+    // Guardar incidente
+    $('#guardarIncidente').click(function() {
+        var dni = $('#dni_result').val();
+        var habitacion = $('#habitacion').val();
+        var acompanante = $('#dni_acompanante').val();
+        var nombre_acompanante = $('#nombre_acompanante').text();
+        var concepto = $('#concepto').val();
+        if (!habitacion || !concepto) {
+            alert('Habitación y concepto son obligatorios');
+            return;
+        }
+        $.ajax({
+            url: 'api/incidentes.php',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                dni: dni,
+                habitacion: habitacion,
+                acompanante: acompanante,
+                nombre_acompanante: nombre_acompanante,
+                concepto: concepto
+            }),
+            success: function(res) {
+                if (res.success) {
+                    alert('Incidente registrado');
+                    $('#formIncidente').hide();
+                    cargarIncidentes(dni);
+                } else {
+                    alert('Error al registrar incidente');
+                }
+            }
+        });
+    });
+    </script>
+</body>
+</html>
